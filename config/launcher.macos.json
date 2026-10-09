@@ -1,0 +1,11 @@
+{
+  "video": "media/startup.mp4",
+  "appBundleIdentifier": "com.openai.codex",
+  "holdAt": 11.3,
+  "transitionStart": 12.7,
+  "fadeDuration": 0.8,
+  "maxWaitSeconds": 60,
+  "volume": 1,
+  "playerWidth": 1280,
+  "playerHeight": 720
+}

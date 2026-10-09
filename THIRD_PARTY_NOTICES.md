@@ -17,3 +17,7 @@ OpenAI、Codex、ChatGPT 和 Windows 名称用于说明所支持的客户端与�
 仓库附有完整龙娘演示视频及原音轨，说明见 `media/MEDIA_NOTICE.md`。原角色图、制作中间文件和从官方程序提取的独立图标没有纳入本仓库。
 
 随附或自行导入的视频、音乐、角色素材和图标，其权利及许可由原提供者规定。软件代码的 MIT 许可不改变这些素材的许可。
+
+## Mac 版本
+
+Mac 版使用系统 AppKit、AVFoundation、AVKit 和 Launch Services；这些组件不随包分发。macOS、Apple 和 Xcode 名称用于平台与开发工具说明。随附视频沿用上游媒体说明。
