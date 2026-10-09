@@ -8,6 +8,7 @@ while IFS= read -r entry; do
     "Dragon Codex Boot.app/Contents/Info.plist"|\
     "Dragon Codex Boot.app/Contents/MacOS/DragonCodexBoot"|\
     "Dragon Codex Boot.app/Contents/Resources/launcher.json"|\
+    "Dragon Codex Boot.app/Contents/Resources/DragonCodexBoot.icns"|\
     "Dragon Codex Boot.app/Contents/Resources/media/startup.mp4"|\
     "Dragon Codex Boot.app/Contents/Resources/LICENSE"|\
     "Dragon Codex Boot.app/Contents/Resources/MEDIA_NOTICE.md"|\
@@ -16,6 +17,6 @@ while IFS= read -r entry; do
     *) printf 'Unexpected package file: %s\n' "$entry" >&2; exit 1 ;;
   esac
 done < <(unzip -Z1 "$ARCHIVE")
-[[ "$count" -eq 8 ]] || { echo 'Package is missing required files.' >&2; exit 1; }
+[[ "$count" -eq 9 ]] || { echo 'Package is missing required files.' >&2; exit 1; }
 unzip -tq "$ARCHIVE"
-echo 'Package contains only the eight approved app files.'
+echo 'Package contains only the nine approved app files.'

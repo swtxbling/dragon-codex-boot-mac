@@ -7,6 +7,8 @@ if [[ "$(uname -s)" != Darwin ]]; then
   exit 1
 fi
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources/media" "$ROOT/build/macos"
+bash "$ROOT/scripts/build-mac-icon.sh"
+cp "$ROOT/build/macos/DragonCodexBoot.icns" "$APP/Contents/Resources/"
 for architecture in arm64 x86_64; do
   xcrun swiftc -O -target "$architecture-apple-macos13.0" \
     "$ROOT/src/macos/LauncherConfig.swift" "$ROOT/src/macos/main.swift" \
@@ -28,13 +30,15 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
   <key>CFBundleName</key><string>Dragon Codex Boot</string>
   <key>CFBundleDisplayName</key><string>Dragon Codex Boot</string>
   <key>CFBundleExecutable</key><string>DragonCodexBoot</string>
+  <key>CFBundleIconFile</key><string>DragonCodexBoot.icns</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.1.0</string>
-  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundleShortVersionString</key><string>0.1.1</string>
+  <key>CFBundleVersion</key><string>2</string>
   <key>LSMinimumSystemVersion</key><string>13.0</string>
   <key>NSHighResolutionCapable</key><true/>
 </dict></plist>
 PLIST
 plutil -lint "$APP/Contents/Info.plist"
 codesign --force --sign - "$APP"
+touch "$APP"
 printf 'Built: %s\n' "$APP"

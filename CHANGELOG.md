@@ -22,3 +22,7 @@
 - 新增 macOS 13+ 原生动画启动器，Apple Silicon / Intel 通用构建。
 - 新增 Codex 标识查找、淡出交接、Esc 跳过、等待超时及媒体失败交接。
 - 新增独立应用打包、配置测试和 macOS CI，保留 Windows 实现。
+
+## Mac fork 0.1.1
+
+- 新增原创龙主题应用图标，配置 Finder / Dock 图标，构建及分发包包含全部标准与 Retina 尺寸。

@@ -1,5 +1,7 @@
 # Dragon Codex Boot — Mac
 
+<img src="assets/mac-app-icon.png" alt="Dragon Codex Boot 图标" width="128">
+
 给 macOS 版 Codex 播放随附龙娘启动动画，再淡出到真实客户端。Fork 自 [yushua0808-cpu/dragon-codex-boot](https://github.com/yushua0808-cpu/dragon-codex-boot)，原 Windows 实现完整保留，见 [Windows 使用说明](docs/windows-readme.md)。独立社区项目，与 OpenAI 无隶属关系。
 
 ## Mac 上怎么用
