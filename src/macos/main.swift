@@ -30,6 +30,8 @@ final class Launcher: NSObject, NSApplicationDelegate {
     private var captureFailed = false
     private var probing = false
     private var useLiveCapture = true
+    private var awaitingPermission = false
+    private var permissionPrompted = false
     private var videoEnded = false
     private var finishing = false
     private var skipRequested = false
@@ -62,11 +64,13 @@ final class Launcher: NSObject, NSApplicationDelegate {
                     throw LauncherError.unreadableVideo
                 }
                 print("Configuration OK; video readable; target: \(appURL.path)")
-                print("Live-window capture permission: \(CGPreflightScreenCaptureAccess() ? "granted" : "required")")
+                print("Legacy capture preflight: \(CGPreflightScreenCaptureAccess()); actual capture is checked on launch.")
                 NSApp.terminate(nil)
                 return
             }
-            if !preview && !smoke && !checkPermission() { return }
+            if !preview && !smoke {
+                reportEvent("Legacy capture preflight: \(CGPreflightScreenCaptureAccess()).")
+            }
             target = NSRunningApplication.runningApplications(withBundleIdentifier: targetBundleID).first
             showPlayer()
             started = Date()
@@ -79,27 +83,33 @@ final class Launcher: NSObject, NSApplicationDelegate {
         } catch { fail(error) }
     }
 
-    private func checkPermission() -> Bool {
-        if CGPreflightScreenCaptureAccess() { return true }
+    private func showPermissionPrompt() {
+        guard !permissionPrompted, !finishing else { return }
+        permissionPrompted = true
+        awaitingPermission = true
+        player?.pause()
+        window?.orderOut(nil)
+        reportEvent("ScreenCaptureKit explicitly denied capture permission.")
         let alert = NSAlert()
         alert.messageText = "实时渐进交接需要屏幕录制权限"
-        alert.informativeText = "启动器会在本机内存中显示 Codex 窗口，让真实界面随动画屏幕逐步放大。请在系统设置的「屏幕与系统音频录制」中允许 Dragon Codex Boot，然后重新打开启动器。"
+        alert.informativeText = "macOS 的实际捕获接口拒绝了当前版本的访问。请在「屏幕与系统音频录制」中允许 Dragon Codex Boot，再重新打开。若开关已经开启，更新后的签名可能与旧授权不匹配。画面仅用于本机内存中的渐进交接。"
         alert.addButton(withTitle: "前往授权")
         alert.addButton(withTitle: "本次只播放动画")
         alert.addButton(withTitle: "取消")
         NSApp.activate(ignoringOtherApps: true)
         switch alert.runModal() {
         case .alertFirstButtonReturn:
-            CGRequestScreenCaptureAccess()
             NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")!)
             NSApp.terminate(nil)
-            return false
         case .alertSecondButtonReturn:
             useLiveCapture = false
-            return true
+            awaitingPermission = false
+            // Time spent deciding permission must not consume the playback timeout.
+            started = Date()
+            window?.makeKeyAndOrderFront(nil)
+            player?.play()
         default:
             NSApp.terminate(nil)
-            return false
         }
     }
 
@@ -288,18 +298,22 @@ final class Launcher: NSObject, NSApplicationDelegate {
     }
 
     private func captureUnavailable(_ error: Error?) {
-        guard !captureFailed else { return }
+        guard !captureFailed, !finishing else { return }
         captureFailed = true
         captureReady = false
         liveLayer?.opacity = 0
         liveLayer?.contents = nil
         capture?.stop()
         capture = nil
+        if requiresScreenCapturePermission(error) {
+            showPermissionPrompt()
+            return
+        }
         reportEvent("Live-window capture unavailable; using aligned fade handoff.")
     }
 
     private func tick() {
-        guard !finishing else { return }
+        guard !finishing, !awaitingPermission else { return }
         if skipRequested && launchCompleted { finish(immediate: true); return }
         if target?.isTerminated == true && launchCompleted { fail(LauncherError.appNotFound); return }
         probeClient()

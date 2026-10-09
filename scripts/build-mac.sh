@@ -2,6 +2,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP="$ROOT/build/Dragon Codex Boot.app"
+SIGNING_IDENTITY="${DRAGON_MAC_SIGNING_IDENTITY:--}"
 if [[ "$(uname -s)" != Darwin ]]; then
   echo "Build this app on macOS with Xcode Command Line Tools." >&2
   exit 1
@@ -32,13 +33,14 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
   <key>CFBundleExecutable</key><string>DragonCodexBoot</string>
   <key>CFBundleIconFile</key><string>DragonCodexBoot.icns</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.2.0</string>
-  <key>CFBundleVersion</key><string>3</string>
+  <key>CFBundleShortVersionString</key><string>0.2.1</string>
+  <key>CFBundleVersion</key><string>4</string>
   <key>LSMinimumSystemVersion</key><string>13.0</string>
   <key>NSHighResolutionCapable</key><true/>
+  <key>NSScreenCaptureUsageDescription</key><string>仅在本机内存中显示所选 Codex 窗口，用于启动动画的渐进交接。</string>
 </dict></plist>
 PLIST
 plutil -lint "$APP/Contents/Info.plist"
-codesign --force --sign - "$APP"
+codesign --force --sign "$SIGNING_IDENTITY" "$APP"
 touch "$APP"
 printf 'Built: %s\n' "$APP"

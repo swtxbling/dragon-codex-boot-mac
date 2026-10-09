@@ -1,4 +1,5 @@
 import Foundation
+import ScreenCaptureKit
 
 func check(_ condition: @autoclosure () -> Bool, _ message: String) {
     guard condition() else { fatalError(message) }
@@ -7,6 +8,15 @@ func check(_ condition: @autoclosure () -> Bool, _ message: String) {
 func rejects(_ config: LauncherConfig, _ message: String) {
     do { try config.validate(); fatalError(message) } catch { }
 }
+
+check(!requiresScreenCapturePermission(nil), "A successful capture must not ask for permission")
+check(requiresScreenCapturePermission(NSError(domain: SCStreamErrorDomain, code: SCStreamError.Code.userDeclined.rawValue)),
+      "An explicit ScreenCaptureKit denial must offer authorization")
+check(!requiresScreenCapturePermission(NSError(domain: SCStreamErrorDomain, code: SCStreamError.Code.internalError.rawValue)),
+      "A capture service failure must not be misreported as denied permission")
+check(!requiresScreenCapturePermission(NSError(domain: NSCocoaErrorDomain, code: SCStreamError.Code.userDeclined.rawValue)),
+      "An unrelated error with the same number must not ask for screen authorization")
+print("Passed capture permission denial classification checks.")
 
 let config = try LauncherConfig.load(from: URL(fileURLWithPath: CommandLine.arguments[1]))
 check(playbackAction(time: 5, elapsed: 5, appReady: false, ended: false, config: config) == .play, "Start playback while launching")
