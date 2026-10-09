@@ -2,10 +2,41 @@
   "video": "media/startup.mp4",
   "appBundleIdentifier": "com.openai.codex",
   "holdAt": 11.3,
-  "transitionStart": 12.7,
-  "fadeDuration": 0.8,
+  "transitionStart": 12.65,
+  "fadeDuration": 0.25,
   "maxWaitSeconds": 60,
   "volume": 1,
   "playerWidth": 1280,
-  "playerHeight": 720
+  "playerHeight": 720,
+  "transitionEnd": 13.65,
+  "screenFrames": [
+    {
+      "time": 12.65,
+      "x": 0.123,
+      "y": 0.094,
+      "width": 0.736,
+      "height": 0.725
+    },
+    {
+      "time": 13,
+      "x": 0.074,
+      "y": 0.061,
+      "width": 0.845,
+      "height": 0.825
+    },
+    {
+      "time": 13.5,
+      "x": 0,
+      "y": 0,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "time": 13.65,
+      "x": 0,
+      "y": 0,
+      "width": 1,
+      "height": 1
+    }
+  ]
 }

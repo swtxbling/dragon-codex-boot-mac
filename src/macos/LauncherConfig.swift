@@ -11,6 +11,16 @@ struct LauncherConfig: Codable {
     var volume: Double = 1
     var playerWidth: Double = 1280
     var playerHeight: Double = 720
+    var transitionEnd: Double? = nil
+    var screenFrames: [ScreenFrame]? = nil
+
+    var handoffEnd: Double { transitionEnd ?? (transitionStart + fadeDuration) }
+    var handoffFrames: [ScreenFrame] {
+        screenFrames ?? [
+            ScreenFrame(time: transitionStart, x: 0.123, y: 0.094, width: 0.736, height: 0.725),
+            ScreenFrame(time: handoffEnd, x: 0, y: 0, width: 1, height: 1)
+        ]
+    }
 
     static func load(from url: URL) throws -> LauncherConfig {
         let config = try JSONDecoder().decode(LauncherConfig.self, from: Data(contentsOf: url))
@@ -29,6 +39,17 @@ struct LauncherConfig: Codable {
               maxWaitSeconds >= 1, maxWaitSeconds <= 300,
               (0...1).contains(volume), playerWidth >= 320, playerHeight >= 180 else {
             throw LauncherError.invalidConfiguration
+        }
+        guard handoffEnd.isFinite, handoffEnd > transitionStart, handoffEnd - transitionStart <= 10,
+              handoffFrames.count >= 2 else { throw LauncherError.invalidConfiguration }
+        for (index, frame) in handoffFrames.enumerated() {
+            guard frame.time.isFinite, frame.x.isFinite, frame.y.isFinite,
+                  frame.width.isFinite, frame.height.isFinite,
+                  frame.x >= 0, frame.y >= 0, frame.width > 0, frame.height > 0,
+                  frame.x + frame.width <= 1, frame.y + frame.height <= 1,
+                  index == 0 || frame.time > handoffFrames[index - 1].time else {
+                throw LauncherError.invalidConfiguration
+            }
         }
     }
 

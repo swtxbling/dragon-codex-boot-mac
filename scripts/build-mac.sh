@@ -11,8 +11,8 @@ bash "$ROOT/scripts/build-mac-icon.sh"
 cp "$ROOT/build/macos/DragonCodexBoot.icns" "$APP/Contents/Resources/"
 for architecture in arm64 x86_64; do
   xcrun swiftc -O -target "$architecture-apple-macos13.0" \
-    "$ROOT/src/macos/LauncherConfig.swift" "$ROOT/src/macos/main.swift" \
-    -framework AppKit -framework AVKit -framework AVFoundation \
+    "$ROOT"/src/macos/*.swift \
+    -framework AppKit -framework AVFoundation -framework ScreenCaptureKit -framework QuartzCore -framework IOSurface \
     -o "$ROOT/build/macos/dragon-codex-boot-$architecture"
 done
 lipo -create "$ROOT/build/macos/dragon-codex-boot-arm64" \
@@ -32,8 +32,8 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
   <key>CFBundleExecutable</key><string>DragonCodexBoot</string>
   <key>CFBundleIconFile</key><string>DragonCodexBoot.icns</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.1.1</string>
-  <key>CFBundleVersion</key><string>2</string>
+  <key>CFBundleShortVersionString</key><string>0.2.0</string>
+  <key>CFBundleVersion</key><string>3</string>
   <key>LSMinimumSystemVersion</key><string>13.0</string>
   <key>NSHighResolutionCapable</key><true/>
 </dict></plist>
